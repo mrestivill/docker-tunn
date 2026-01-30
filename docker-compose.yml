@@ -6,7 +6,7 @@ services:
     container_name: tunn-proxy
     # For development, build from source
     # For production, consider using a pre-built image if available
-    # image: your-registry/tunn:latest
+    # image: ghcr.io/mrestivill/docker-tunn:main
     
     # Required environment variables
     environment:
