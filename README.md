@@ -20,3 +20,10 @@ vi .env #edit variables
 
 docker-compose up -d
 ```
+
+# client
+
+```bash
+websocat ws://localhost:1080
+$ ls
+```
