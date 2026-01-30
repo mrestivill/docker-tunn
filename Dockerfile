@@ -1,5 +1,5 @@
 FROM golang:alpine AS builder
-RUN git clone https://github.com/ayanrajpoot10/tunn.git && cd tunn && go build
+RUN go install  github.com/ayanrajpoot10/tunn
 
 FROM alpine:latest
 COPY --from=builder /go/tunn/tunn /usr/local/bin/
