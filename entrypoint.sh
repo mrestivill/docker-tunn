@@ -13,6 +13,7 @@ cat > /tmp/config.json <<EOF
     "port": ${LISTENER_PORT:-1080},
     "proxyType": "${PROXY_TYPE:-socks5}"
   },
+  "httpPayload": "GET / HTTP/1.1[crlf]Host: api.ril.com[crlf]Upgrade: websocket[crlf][crlf]",
   "connectionTimeout": ${CONN_TIMEOUT:-30}
 }
 EOF
