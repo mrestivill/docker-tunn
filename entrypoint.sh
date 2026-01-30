@@ -1,6 +1,6 @@
 #!/bin/sh
 # Generate config.json from environment variables
-cat > /config.json <<EOF
+cat > /tmp/config.json <<EOF
 {
   "mode": "${TUNN_MODE:-direct}",
   "ssh": {
@@ -17,4 +17,4 @@ cat > /config.json <<EOF
 }
 EOF
 # Run tunn with the generated config
-exec tunn --config /config.json
+exec tunn --config /tmp/config.json

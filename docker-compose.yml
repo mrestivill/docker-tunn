@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  tunn:
+    build: .
+    container_name: tunn-proxy
+    # For development, build from source
+    # For production, consider using a pre-built image if available
+    # image: your-registry/tunn:latest
+    
+    # Required environment variables
+    environment:
+      - TUNN_MODE=direct
+      - SSH_HOST=your-ssh-server.com
+      - SSH_PORT=22
+      - SSH_USER=your_username
+      - SSH_PASSWORD=your_password  # Consider using SSH keys instead for production
+      
+      # Optional settings with defaults
+      - LISTENER_PORT=1080
+      - PROXY_TYPE=socks5
+      - CONN_TIMEOUT=30
+      
+      # For proxy mode (uncomment if using proxy mode)
+      # - HTTP_PROXY=http://proxy-server:8080
+      # - HTTP_PAYLOAD=GET / HTTP/1.1[crlf]Host: api.ril.com[crlf]Upgrade: websocket[crlf][crlf]
+    
+    # Map the proxy port to host
+    ports:
+      - "1080:1080"  # Maps container's proxy port to host
+    
+    # Run in the foreground
+    restart: unless-stopped
+    
+    # Optional: Mount volume for persistent configuration
+    # volumes:
+    #   - ./config:/config
+    
+    # Security: Run as non-root user
+    user: "1000:1000"
+    
+    # Health check (optional)
+    # healthcheck:
+    #   test: ["CMD", "nc", "-z", "localhost", "1080"]
+    #   interval: 30s
+    #   timeout: 10s
+    #   retries: 3

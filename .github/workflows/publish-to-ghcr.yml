@@ -1,0 +1,62 @@
+name: Build and Publish Tunn to GHCR
+
+on:
+  # Trigger on pushes to the main branch
+  push:
+    branches: [ "main" ]
+  # Optional: Also trigger on creating releases
+  release:
+    types: [published]
+
+# Define environment variables for the workflow
+env:
+  REGISTRY: ghcr.io
+  # Uses your repository name (e.g., 'your-username/tunn') for the image name
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    # Grant necessary permissions for the GITHUB_TOKEN
+    permissions:
+      contents: read
+      packages: write
+      attestations: write
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          # The github.actor is the username that triggered the workflow
+          username: ${{ github.actor }}
+          # Use the automatically generated secret for authentication[citation:1]
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          # Generate tags: latest, plus the git ref (branch or tag name)
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          # Optional: Build arguments for Dockerfile, useful if you add them later
+          # build-args: |
+          #   TUNN_VERSION=${{ github.sha }}
